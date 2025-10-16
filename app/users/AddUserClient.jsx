@@ -42,12 +42,16 @@ export default function AddUserClient() {
       <h2>Add New User</h2>
       <div>
         <input
+        id="username"
+        name="user-name"
           placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           style={{ marginRight: "0.5rem" }}
         />
         <input
+        id="email"
+        name="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}

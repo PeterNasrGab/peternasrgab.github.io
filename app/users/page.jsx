@@ -7,7 +7,13 @@ export const dynamic = "force-dynamic";
 async function getUsers() {
   const baseUrl = `https://${process.env.VERCEL_URL}`;
 
-  const res = await fetch(`${baseUrl}/api/users`, { cache: "no-store" });
+  const res = await fetch('/api/users', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          cache: 'no-store'
+        })
 
   if (!res.ok) {
     console.error("Failed to fetch users", res.statusText);
