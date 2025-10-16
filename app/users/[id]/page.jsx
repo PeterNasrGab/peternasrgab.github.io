@@ -2,9 +2,7 @@ import { notFound } from "next/navigation";
 import UserDetailClient from "./UserDetailClient";
 
 async function getUser(id) {
-  const baseUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+  const baseUrl = `https://${process.env.VERCEL_URL}`;
 
 const res = await fetch(`${baseUrl}/api/users/${id}`, { cache: "no-store" });
 
