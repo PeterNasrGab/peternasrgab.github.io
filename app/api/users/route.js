@@ -2,47 +2,47 @@ import { connectDB } from "../../../lib/mongodb";
 import User from "../../../models/User";
 import { NextResponse } from "next/server";
 
-export async function GET() {
-  try {
-    await connectDB();
-    const users = await User.find().sort({ createdAt: -1 });
-    return NextResponse.json(users);
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
+export const dynamic = "force-dynamic";
 
-export async function POST(req) {
-  try {
-    await connectDB();
-    const body = await req.json();
-    const user = await User.create(body);
-    return NextResponse.json(user, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
-}
+export async function GET(req) {
+  await connectDB();
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
 
-export async function PUT(req) {
-  try {
-    await connectDB();
-    const { id, ...data } = await req.json();
-    const user = await User.findByIdAndUpdate(id, data, { new: true });
+  if (id) {
+    const user = await User.findById(id);
     if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
-    return NextResponse.json(user);
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+
+    return NextResponse.json({
+      _id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+    });
   }
+
+  const users = await User.find().sort({ createdAt: -1 });
+  return NextResponse.json(users.map(u => ({
+    _id: u._id.toString(),
+    name: u.name,
+    email: u.email,
+  })));
+}
+
+export async function PATCH(req) {
+  await connectDB();
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+  const updates = await req.json();
+  const user = await User.findByIdAndUpdate(id, updates, { new: true });
+  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+  return NextResponse.json({ _id: user._id.toString(), name: user.name, email: user.email });
 }
 
 export async function DELETE(req) {
-  try {
-    await connectDB();
-    const { id } = await req.json();
-    const deleted = await User.findByIdAndDelete(id);
-    if (!deleted) return NextResponse.json({ error: "User not found" }, { status: 404 });
-    return NextResponse.json({ message: "User deleted successfully" });
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
+  await connectDB();
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+  const deleted = await User.findByIdAndDelete(id);
+  if (!deleted) return NextResponse.json({ error: "User not found" }, { status: 404 });
+  return NextResponse.json({ message: "User deleted successfully" });
 }
