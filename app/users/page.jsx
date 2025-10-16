@@ -1,6 +1,9 @@
 import Link from "next/link";
 import AddUserClient from "./AddUserClient";
 
+export const dynamic = "force-dynamic";
+
+
 async function getUsers() {
   const baseUrl = process.env.VERCEL_URL 
     ? `https://${process.env.VERCEL_URL}` 
