@@ -2,10 +2,17 @@ import Link from "next/link";
 import AddUserClient from "./AddUserClient";
 
 async function getUsers() {
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
+  const baseUrl = process.env.VERCEL_URL 
+    ? `https://${process.env.VERCEL_URL}` 
     : "http://localhost:3000";
+
   const res = await fetch(`${baseUrl}/api/users`, { cache: "no-store" });
+
+  if (!res.ok) {
+    console.error("Failed to fetch users", res.statusText);
+    return [];
+  }
+
   return res.json();
 }
 
